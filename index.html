@@ -16,39 +16,49 @@
       height: 100vh;
       font-family: Arial, sans-serif;
       display: flex;
+      justify-content: flex-start;
     }
 
     .main-container {
       display: flex;
-      flex-grow: 1;
+      width: 100%;
+      height: 100%;
     }
 
     .left-section {
-      width: 60%;
+      flex: 1 1 300px;
       background-image: url('./images/login_img.jpg');
       background-size: cover;
       background-position: center;
+      transition: all 0.3s ease;
     }
 
     .right-section {
-      width: 40%;
+      width: 280px;
       background-color: white;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
     .login-form {
-      width: 80%;
-      max-width: 35vw;
-      padding: 5vh;
-      border-radius: 2vh;
-      box-shadow: 0 1vh 2vh rgba(0, 0, 0, 0.1);
+      width: 280px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       background-color: #f9f9f9;
     }
 
+    .title-txt {
+      margin: 0;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
     .login-form h2 {
-      margin-bottom: 3vh;
+      margin-bottom: 24px;
       text-align: center;
       color: #333;
       font-size: 1.5rem;
@@ -56,36 +66,37 @@
 
     .input-group {
       position: relative;
-      margin: 2vh 0;
+      margin: 16px 0;
     }
 
     .input-field {
       width: 100%;
-      padding: 0.8rem 1rem;
-      padding-right: 10vw;
-      border: 0.2vh solid #ccc;
-      border-radius: 1vh;
+      padding: 12px 16px;
+      padding-right: 40px;
+      /* Espaço para o ícone */
+      border: 1px solid #ccc;
+      border-radius: 8px;
       font-size: 1rem;
     }
 
-    .toggle-password {
+    password-eye {
       position: absolute;
       top: 50%;
-      right: 2vw;
+      right: 16px;
       transform: translateY(-50%);
       cursor: pointer;
-      width: 3vh;
-      height: 3vh;
+      width: 24px;
+      height: 24px;
     }
 
     .login-btn,
     .singup-btn {
       display: inline-block;
-      width: 45%;  /* Ajusta para que os botões ocupem espaço de forma proporcional */
-      padding: 0.8rem 1rem;
+      width: 45%;
+      padding: 12px 16px;
       background-color: #4CAF50;
       border: none;
-      border-radius: 1vh;
+      border-radius: 8px;
       color: white;
       font-size: 1rem;
       cursor: pointer;
@@ -99,21 +110,35 @@
 
     .buttons-container {
       display: flex;
-      justify-content: space-between; /* Garante que os botões fiquem ao lado um do outro */
-      margin-top: 2vh;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 400px) {
+      .left-section {
+        display: none;
+      }
+
+      .right-section {
+        width: 280px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
   </style>
 
+  <script src="./scripts/loadComponents.js" defer></script>
 </head>
 
 <body>
 
   <div class="main-container">
-    <!-- Seção da imagem -->
     <div class="left-section"></div>
 
-    <!-- Seção do formulário -->
     <div class="right-section">
+      <h2 class="title-txt">Sistema de chamados</h2>
       <div class="login-form">
         <h2>Login</h2>
         <form onsubmit="handleLogin(event)">
@@ -122,11 +147,9 @@
           </div>
           <div class="input-group">
             <input type="password" id="password" class="input-field" placeholder="Senha" required>
-            <img id="togglePassword" class="toggle-password" src="https://via.placeholder.com/24x24?text=👁"
-              alt="Mostrar senha">
+            <password-eye data-password-field-id="password"></password-eye>
           </div>
           <div class="buttons-container">
-            <!-- Botões lado a lado -->
             <button type="submit" class="login-btn">Fazer Login</button>
             <button type="button" class="singup-btn">Registrar-se</button>
           </div>
@@ -134,6 +157,7 @@
       </div>
     </div>
   </div>
+
 
   <script>
     function handleLogin(event) {
@@ -148,6 +172,7 @@
         alert('Por favor, preencha ambos os campos!');
       }
     }
+  </script>
+</body>
 
-    const togglePassword = document.getElementById('togglePassword');
-   
+</html>
