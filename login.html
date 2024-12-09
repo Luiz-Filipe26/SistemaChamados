@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tela de Login</title>
+  <link rel="stylesheet" href="./styles/login.css">
+  <script src="./scripts/loadComponents.js" defer></script>
+</head>
+
+<body>
+
+  <div class="main-container">
+    <div class="left-section"></div>
+
+    <div class="right-section">
+      <h2 class="title-txt">Sistema de chamados</h2>
+      <div class="login-form">
+        <h2>Login</h2>
+        <form onsubmit="handleLogin(event)">
+          <div class="input-group">
+            <input type="text" id="username" class="input-field" placeholder="Usuário" required>
+          </div>
+          <div class="input-group">
+            <input type="password" id="password" class="input-field" placeholder="Senha" required>
+            <password-eye data-password-field-id="password"></password-eye>
+          </div>
+          <div class="buttons-container">
+            <button type="submit" class="login-btn">Fazer Login</button>
+            <button type="button" class="singup-btn">Registrar-se</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    function handleLogin(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (username && password) {
+        alert('Login bem-sucedido!');
+      } else {
+        alert('Por favor, preencha ambos os campos!');
+      }
+    }
+  </script>
+</body>
+
+</html>

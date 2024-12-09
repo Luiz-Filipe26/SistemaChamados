@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Chamados</title>
+    <link rel="stylesheet" href="./styles/tickets.css">
+    <script src="./components/input-with-placeholder.js"></script>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <h1>Sistema de Chamados</h1>
+    </header>
+
+    <!-- Filtros -->
+    <section class="filters-section">
+        <h2>Filtros</h2>
+        <div class="filters-group">
+            <div class="filter-input">
+                <input-with-placeholder id="ticket" data-placeholder="Chamado" data-type="number" data-width="200px" />
+            </div>
+            <div class="filter-input">
+                <input-with-placeholder id="status" data-placeholder="Status" data-type="text" data-width="200px" />
+            </div>
+            <div class="filter-input">
+                <input-with-placeholder id="creator" data-placeholder="Criador" data-type="text" data-width="200px" />
+            </div>
+            <div class="filter-input">
+                <input-with-placeholder id="startDate" data-placeholder="Data Início de Abertura" data-type="date" data-width="200px" />
+            </div>
+            <div class="filter-input">
+                <input-with-placeholder id="endDate" data-placeholder="Data Fim de Abertura" data-type="date" data-width="200px" />
+            </div>
+            <button class="search-btn" onclick="searchTickets()">Pesquisar</button>
+        </div>
+    </section>
+
+    <!-- Tabela de Tickets -->
+    <section class="tickets-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Descrição</th>
+                    <th>Data de Abertura</th>
+                    <th>Data de Atualização</th>
+                    <th>Criador</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="ticketsTableBody">
+            </tbody>
+        </table>
+    </section>
+
+    <section id="filtersSection">
+        <h3>Filtros Ativos:</h3>
+        <pre id="filtersOutput"></pre>
+    </section>
+
+    <script>
+        // Função para simular a obtenção de dados dos tickets
+        function getTickets(filters) {
+            // Filtra os dados simulados com base nos filtros
+            const allTickets = [
+                { number: '001', description: 'Erro ao fazer login', openDate: '2024-12-07', updateDate: '2024-12-08', creator: 'João', status: 'Em andamento' },
+                { number: '002', description: 'Problema na interface de usuário', openDate: '2024-12-06', updateDate: '2024-12-07', creator: 'Ana', status: 'Fechado' }
+            ];
+
+            // Filtragem simples (baseado nos filtros fornecidos)
+            return allTickets.filter(ticket => {
+                let match = true;
+                
+                if (filters.ticket && ticket.number !== filters.ticket) {
+                    match = false;
+                }
+                if (filters.status && ticket.status !== filters.status) {
+                    match = false;
+                }
+                if (filters.creator && ticket.creator !== filters.creator) {
+                    match = false;
+                }
+                if (filters.startDate && ticket.openDate < filters.startDate) {
+                    match = false;
+                }
+                if (filters.endDate && ticket.openDate > filters.endDate) {
+                    match = false;
+                }
+                
+                return match;
+            });
+        }
+
+        function createRow(tableBody, ticket) {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${ticket.number}</td>
+                <td>${ticket.description}</td>
+                <td>${ticket.openDate}</td>
+                <td>${ticket.updateDate}</td>
+                <td>${ticket.creator}</td>
+                <td>${ticket.status}</td>
+            `;
+
+            tableBody.appendChild(row);
+        }
+
+        function populateTicketsTable(filters) {
+            const tickets = getTickets(filters);
+            const tableBody = document.getElementById('ticketsTableBody');
+            tableBody.innerHTML = '';
+
+            tickets.forEach(ticket => createRow(tableBody, ticket));
+        }
+
+        function searchTickets() {
+            const ticketValue = document.getElementById('ticket').shadowRoot.querySelector('input').value || '';
+            const statusValue = document.getElementById('status').shadowRoot.querySelector('input').value || '';
+            const creatorValue = document.getElementById('creator').shadowRoot.querySelector('input').value || '';
+            const startDateValue = document.getElementById('startDate').shadowRoot.querySelector('input').value || '';
+            const endDateValue = document.getElementById('endDate').shadowRoot.querySelector('input').value || '';
+
+            const filters = {
+                ticket: ticketValue,
+                status: statusValue,
+                creator: creatorValue,
+                startDate: startDateValue,
+                endDate: endDateValue
+            };
+
+            // Exibe o objeto de filtros no DOM
+            document.getElementById('filtersOutput').textContent = JSON.stringify(filters, null, 2);
+
+            // Preenche a tabela com os tickets filtrados
+            populateTicketsTable(filters);
+        }
+    </script>
+
+</body>
+
+</html>

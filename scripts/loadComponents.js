@@ -1,4 +1,4 @@
-function loadComponents() {
+function loadComponents() { //algoritmo não funciona 100%
   const componentTags = new Set(
     Array.from(document.querySelectorAll('*'))
       .filter(component => component.tagName.includes('-'))
