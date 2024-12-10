@@ -114,3 +114,7 @@ th, td {
 .ticket-btn:hover {
     background-color: #45a049;
 }
+
+table td {
+    cursor: pointer;
+}
