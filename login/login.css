@@ -19,7 +19,7 @@ body {
 
 .left-section {
     flex: 1 1 300px;
-    background-image: url('../images/login_img.jpg'); /* Caminho relativo para o diretório pai */
+    background-image: url('/assets/images/login_img.jpg'); /* Caminho relativo para o diretório pai */
     background-size: cover;
     background-position: center;
     transition: all 0.3s ease;

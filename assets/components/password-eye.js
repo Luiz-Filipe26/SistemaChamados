@@ -13,7 +13,7 @@ class PasswordEye extends HTMLElement {
           cursor: pointer;
         }
       </style>
-      <img id="togglePassword" class="toggle-password" src="./images/eye.svg" alt="Mostrar senha">
+      <img id="togglePassword" class="toggle-password" src="/assets/images/eye.svg" alt="Mostrar senha">
     `;
   }
 
@@ -44,10 +44,10 @@ class PasswordEye extends HTMLElement {
     }
 
     if (this.isOpen) {
-      this.toggleButton.setAttribute("src", "./images/eye.svg");
+      this.toggleButton.setAttribute("src", "/assets/images/eye.svg");
       this.passwordInput.setAttribute("type", "password");
     } else {
-      this.toggleButton.setAttribute("src", "./images/eye-off.svg");
+      this.toggleButton.setAttribute("src", "/assets/images/eye-off.svg");
       this.passwordInput.setAttribute("type", "text");
     }
     this.isOpen = !this.isOpen;

@@ -39,8 +39,8 @@ class InputWithPlaceholder extends HTMLElement {
         }
         .input-field:focus + .input-label,
         .input-field:not(:placeholder-shown) + .input-label {
-          top: -10px;
-          font-size: 12px;
+          top: -18px;
+          font-size: 15px;
           color: rgb(136, 136, 136);
         }
       </style>
