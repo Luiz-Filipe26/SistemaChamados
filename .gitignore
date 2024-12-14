@@ -1,0 +1,24 @@
+# Ignorar arquivos de compilação do Spring Boot
+/target/
+/out/
+
+# Ignorar diretórios e arquivos temporários de IDEs
+.idea/
+*.iml
+.vscode/
+
+# Arquivos de configuração de build
+*.log
+*.class
+
+# Arquivos específicos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Ignorar arquivos de configuração de dependências locais
+/.mvn/
+/mvnw
+/mvnw.cmd
+
+# Ignorar o diretório de build
+/build/
