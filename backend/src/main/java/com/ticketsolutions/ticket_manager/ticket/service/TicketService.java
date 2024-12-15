@@ -1,12 +1,13 @@
 package com.ticketsolutions.ticket_manager.ticket.service;
 
-import com.ticketsolutions.ticket_manager.ticket.repository.TicketDao;
-import com.ticketsolutions.ticket_manager.ticket.model.Ticket;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.ticketsolutions.ticket_manager.ticket.domain.Ticket;
+import com.ticketsolutions.ticket_manager.ticket.repository.TicketDao;
 
 @Service
 public class TicketService {

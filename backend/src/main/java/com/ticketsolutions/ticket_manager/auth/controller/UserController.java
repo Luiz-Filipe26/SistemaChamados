@@ -3,7 +3,9 @@ package com.ticketsolutions.ticket_manager.auth.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,13 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ticketsolutions.ticket_manager.auth.domain.AuthenticationDTO;
-import com.ticketsolutions.ticket_manager.auth.domain.LoginResponseDTO;
 import com.ticketsolutions.ticket_manager.auth.domain.RegisterDTO;
 import com.ticketsolutions.ticket_manager.auth.domain.User;
 import com.ticketsolutions.ticket_manager.auth.repository.UserDao;
 import com.ticketsolutions.ticket_manager.auth.security.TokenProvider;
 import com.ticketsolutions.ticket_manager.auth.service.UserService;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 
 @RestController
@@ -48,25 +50,35 @@ public class UserController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO data) {
-		try {
-			var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
-			var auth = this.authenticationManager.authenticate(usernamePassword);
-			var token = tokenProvider.generateToken((User) auth.getPrincipal());
-			return ResponseEntity.ok(new LoginResponseDTO(token));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
+	    try {
+	        var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
+	        var auth = this.authenticationManager.authenticate(usernamePassword);
+	        var token = tokenProvider.generateToken((User) auth.getPrincipal());
+
+	        ResponseCookie cookie = ResponseCookie.from("auth_token", token)
+	                .httpOnly(true)
+	                .secure(false)
+	                .path("/")
+	                .maxAge(3600)
+	                .build();
+
+	        return ResponseEntity.ok()
+	                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+	                .build();
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
 	}
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterDTO data) {
+        if (this.userService.fetchUserByName(data.name()).isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+        String encryptedPassword = passwordEncoder.encode(data.password());
+        User newUser = new User(0L, data.name(), data.email(), encryptedPassword, data.birthDate(), data.role(), data.location());
+        this.userDao.save(newUser);
 
-	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody @Valid RegisterDTO data) {
-		if (this.userService.fetchUserByName(data.name()) != null)
-			return ResponseEntity.badRequest().build();
-		String encryptedPassword = passwordEncoder.encode(data.password());
-		User newUser = new User(0L, data.name(), data.email(), encryptedPassword, data.birthDate(), data.role(), data.location());
-		this.userDao.save(newUser);
-
-		return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
 	}
 
 	@GetMapping

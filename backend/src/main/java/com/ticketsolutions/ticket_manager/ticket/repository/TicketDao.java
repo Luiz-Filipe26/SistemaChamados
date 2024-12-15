@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 
 import org.springframework.stereotype.Repository;
 
-import com.ticketsolutions.ticket_manager.ticket.model.Ticket;
+import com.ticketsolutions.ticket_manager.ticket.domain.Ticket;
 
 @Repository
 public class TicketDao {

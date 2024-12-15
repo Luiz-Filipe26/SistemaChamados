@@ -1,8 +1,15 @@
 -- Criação da tabela de tickets
 CREATE TABLE IF NOT EXISTS tickets (
-    id SERIAL PRIMARY KEY,
-    description VARCHAR(255) NOT NULL
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    user_id BIGINT NOT NULL,
+    creation_date DATE NOT NULL,
+    update_date DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 
 -- Inserção de um ticket inicial
 INSERT INTO tickets (description) VALUES ('Chamado inicial');
@@ -12,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(127) NOT NULL,
     email VARCHAR(127) NOT NULL UNIQUE,
-    password CHAR(60) NOT NULL,
+    password CHAR(60) NOT NULL  -- O hash da senha
     birth_date DATE,
     role VARCHAR(63),
     location VARCHAR(255)
