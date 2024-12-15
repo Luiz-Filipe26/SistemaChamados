@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(127) NOT NULL,
     email VARCHAR(127) NOT NULL UNIQUE,
+    password CHAR(60) NOT NULL  -- O hash da senha
     birth_date DATE,
     role VARCHAR(63),
     location VARCHAR(255)
@@ -19,4 +20,4 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Inserção de um usuário inicial
 -- INSERT INTO users (name, email, birth_date, role, location) 
--- VALUES ('Administrador', 'admin@example.com', '1980-01-01', 'Admin', 'Brasil');
+-- VALUES ('Administrador', 'CwTycUXsF1YdH..sIYtKOU4Fdw5wrewrewBS9z8m4qDxgrMDAkudY6t542f6', admin@example.com', '1980-01-01', 'Admin', 'Brasil');

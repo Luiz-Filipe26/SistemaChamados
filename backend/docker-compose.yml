@@ -8,6 +8,8 @@ services:
     depends_on:
       db-ticket-manager:
         condition: service_healthy
+    env_file:
+        - .env
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
