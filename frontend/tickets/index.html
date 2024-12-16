@@ -68,52 +68,34 @@
 
     <script>
         let ticketsData = []; // Armazena os tickets recuperados globalmente
-
-        async function getDummyTickets(filters) {
-            const allTickets = [
-                { number: '001', description: 'Erro ao fazer login', openDate: '2024-12-07', updateDate: '2024-12-08', creator: 'João', status: 'Em andamento' },
-                { number: '002', description: 'Problema na interface de usuário', openDate: '2024-12-06', updateDate: '2024-12-07', creator: 'Ana', status: 'Fechado' }
-            ];
-
-            return allTickets.filter(ticket => {
-                if (filters.ticket) return ticket.number === filters.ticket;
-                if (filters.status && ticket.status !== filters.status) return false;
-                if (filters.creator && ticket.creator !== filters.creator) return false;
-                if (filters.startDate && ticket.openDate < filters.startDate) return false;
-                if (filters.endDate && ticket.openDate > filters.endDate) return false;
-                return true;
-            });
-        }
-
+    
         async function getTickets(filters) {
-            return await getDummyTickets(filters);
-            //código abaixo é inacessível, estando só para referência por agora
-
-            const endpoint = 'https://api.exemplo.com/tickets';
-
+            const endpoint = 'http://localhost:8080/tickets'; // Endpoint da API backend para obter tickets
+    
             try {
+                // Fazendo uma requisição GET com os filtros
                 const response = await fetch(endpoint, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(filters)
+                    }
                 });
-
+    
                 if (!response.ok) {
                     throw new Error(`Erro ao buscar tickets: ${response.statusText}`);
                 }
-
+    
+                // Retorna os tickets em formato JSON
                 return await response.json();
             } catch (error) {
                 console.error(error);
                 return [];
             }
         }
-
+    
         function createRow(tableBody, ticket) {
             const row = document.createElement('tr');
-
+    
             row.innerHTML = `
                 <td>${ticket.number}</td>
                 <td>${ticket.description}</td>
@@ -122,7 +104,7 @@
                 <td>${ticket.creator}</td>
                 <td>${ticket.status}</td>
             `;
-
+    
             row.addEventListener('click', () => {
                 const selectedTicket = ticketsData.find(t => t.number === ticket.number);
                 if (selectedTicket) {
@@ -130,28 +112,28 @@
                     window.open(targetUrl, '_blank');
                 }
             });
-
+    
             tableBody.appendChild(row);
         }
-
+    
         async function populateTicketsTable(filters) {
             const tableBody = document.getElementById('ticketsTableBody');
             tableBody.innerHTML = '';
-
+    
             try {
                 ticketsData = await getTickets(filters);
-
+    
                 ticketsData.forEach(ticket => createRow(tableBody, ticket));
             } catch (error) {
                 console.error('Erro ao popular tabela:', error);
             }
         }
-
+    
         function getInput(id) {
             const inputField = document.getElementById(id)?.querySelector('.input-field');
             return inputField ? inputField.value : '';
         }
-
+    
         function searchTickets() {
             const filters = {
                 ticket: getInput('ticket'),
@@ -160,9 +142,9 @@
                 startDate: getInput('startDate'),
                 endDate: getInput('endDate')
             };
-
+    
             console.log('Filtros enviados:', filters);
-
+    
             populateTicketsTable(filters);
         }
     </script>

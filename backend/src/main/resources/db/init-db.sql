@@ -1,5 +1,3 @@
-DROP TABLE tickets;
-
 -- Criação da tabela de tickets
 CREATE TABLE IF NOT EXISTS tickets (
     id BIGSERIAL PRIMARY KEY,
