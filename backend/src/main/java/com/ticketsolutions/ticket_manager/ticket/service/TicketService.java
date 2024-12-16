@@ -32,15 +32,20 @@ public class TicketService {
         return ticketDao.save(ticket);
     }
 
-    public Optional<Ticket> updateTicket(Long id, Ticket ticketDetails) {
-        return ticketDao.findById(id).map(existingTicket -> {
+    public Ticket updateTicket(Long id, Ticket ticketDetails) {
+    	Optional<Ticket> existingTicketOpt = ticketDao.findById(id);
+    	if(existingTicketOpt.isPresent()) {
+    		Ticket existingTicket = existingTicketOpt.get();
             existingTicket.setTitle(ticketDetails.getTitle());
             existingTicket.setDescription(ticketDetails.getDescription());
             existingTicket.setStatus(ticketDetails.getStatus());
             existingTicket.setUserId(ticketDetails.getUserId());
+            existingTicket.setCreationDate(ticketDetails.getCreationDate());
             existingTicket.setUpdateDate(LocalDate.now());
+            
             return ticketDao.update(id, existingTicket);
-        });
+    	}
+        return null;
     }
 
     public boolean deleteTicket(Long id) {
