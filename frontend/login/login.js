@@ -1,4 +1,6 @@
-import RequestConfig from "assets/scripts/RequestConfig";
+import RequestConfig from "/assets/scripts/RequestConfig.js";
+
+window.handleLogin = handleLogin;
 
 function handleLogin(event) {
     event.preventDefault();
@@ -9,12 +11,13 @@ function handleLogin(event) {
     if (username && password) {
         fetch('http://localhost:8080/users/login',
             new RequestConfig()
-            .post()
-            .asJson()
-            .body({
-                login: username,
-                password: password,
-            }))
+                .post()
+                .asJson()
+                .jsonBody({
+                    login: username,
+                    password: password
+                })
+            )
             .then(response => {
                 if (response.ok) {
                     return response.text();
