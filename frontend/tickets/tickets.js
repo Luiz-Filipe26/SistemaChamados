@@ -31,7 +31,7 @@ function createRow(tableBody, ticket) {
     const row = document.createElement('tr');
 
     row.innerHTML = `
-        <td>${ticket.id}</td>
+        <td>${String(ticket.id).padStart(6, '0')}</td>
         <td>${ticket.title}</td>
         <td>${ticket.status}</td>
         <td>${ticket.creationDate}</td>
