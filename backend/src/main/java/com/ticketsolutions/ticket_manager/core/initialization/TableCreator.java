@@ -1,4 +1,4 @@
-package com.ticketsolutions.ticket_manager.initialization;
+package com.ticketsolutions.ticket_manager.core.initialization;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +11,8 @@ import javax.sql.DataSource;
 @Component
 public class TableCreator implements CommandLineRunner {
 
-    private final JdbcTemplate jdbcTemplate;
+    @SuppressWarnings("unused")
+	private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
 
     public TableCreator(JdbcTemplate jdbcTemplate, DataSource dataSource) {

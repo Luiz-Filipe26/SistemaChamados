@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-br">
 
 <head>
   <meta charset="UTF-8">
@@ -28,48 +28,16 @@
           </div>
           <div class="buttons-container">
             <button type="submit" class="login-btn">Fazer Login</button>
-            <button type="button" class="singup-btn">Registrar-se</button>
+            <button type="button" class="singup-btn" id="signup-btn">Registrar-se</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-
-  <script>
-    function handleLogin(event) {
-      event.preventDefault();
-
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-
-      if (username && password) {
-        fetch('http://localhost:8080/users/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            login: username,
-            password: password,
-          }),
-        })
-        .then(response => {
-          if (response.ok) {
-            alert('Login bem-sucedido!');
-            window.location.href = '/tickets';
-          } else {
-            alert('Credenciais inválidas. Tente novamente.');
-          }
-        })
-        .catch(error => {
-          alert('Erro na conexão. Tente novamente mais tarde.');
-        });
-      } else {
-        alert('Por favor, preencha ambos os campos!');
-      }
-    }
+  <script type="module" src="./login.js">
   </script>
+
 </body>
 
 </html>

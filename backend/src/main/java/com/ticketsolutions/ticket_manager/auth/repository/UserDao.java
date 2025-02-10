@@ -3,33 +3,45 @@ package com.ticketsolutions.ticket_manager.auth.repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import com.ticketsolutions.ticket_manager.auth.domain.User;
+import com.ticketsolutions.ticket_manager.core.utils.SQLCreator;
+import com.ticketsolutions.ticket_manager.core.utils.SQLFields;
 
 @Repository
 public class UserDao {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserDao.class);
     private final DataSource dataSource;
+	private static final SQLCreator sqlCreator = new SQLCreator("users");
 
     public UserDao(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    private Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+    @SuppressWarnings("serial")
+    private Connection getConnection() throws DataAccessException {
+        try {
+            return dataSource.getConnection();
+        } catch (Exception e) {
+            logger.error("Erro ao obter conexão com o banco de dados", e);
+            throw new DataAccessException("Erro ao obter conexão com o banco de dados", e) {};
+        }
     }
 
     public List<User> findAll() {
-        String sql = "SELECT * FROM users";
+        String sql = sqlCreator.findAll();
         List<User> users = new ArrayList<>();
 
         try (Connection connection = getConnection();
@@ -37,96 +49,111 @@ public class UserDao {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                User user = mapRowToUser(rs);
+                User user = mapRowToObject(rs);
                 users.add(user);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Erro ao buscar todos os usuários", e);
         }
 
         return users;
     }
 
-    public Optional<User> findById(Long id) {
-        String sql = "SELECT * FROM users WHERE id = ?";
+    public User findById(Long id) {
+        String sql = sqlCreator.findBy("id");
         User user = null;
 
-        try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection connection = getConnection(); 
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    user = mapRowToUser(rs);
+                    user = mapRowToObject(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Erro ao buscar usuário com ID: " + id, e);
         }
 
-        return Optional.ofNullable(user);
+        return user;
     }
 
-    public Optional<User> findByNameOrEmail(String name, String email) {
-        String sql = "SELECT * FROM users WHERE name = ? OR email = ?";
+    public User findByNameOrEmail(String name, String email) {
+        String sql = sqlCreator.findByAny("name", "email");
+        User user = null;
+
         try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, name);
             stmt.setString(2, email);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    User user = mapRowToUser(rs);
-                    return Optional.of(user);
+                    user = mapRowToObject(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Erro ao buscar usuário por nome ou email", e);
         }
-        return Optional.empty();
+
+        return user;
     }
-    
-    public Optional<User> findByName(String name) {
-        String sql = "SELECT * FROM users WHERE name = ?";
+
+    public User findByName(String name) {
+        String sql = sqlCreator.findBy("name");
+        User user = null;
+
         try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, name);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    User user = mapRowToUser(rs);
-                    return Optional.of(user);
+                    user = mapRowToObject(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Erro ao buscar usuário por nome", e);
         }
-        return Optional.empty();
+
+        return user;
     }
 
-    public Optional<User> findByEmail(String email) {
-        String sql = "SELECT * FROM users WHERE email = ?";
+    public User findByEmail(String email) {
+        String sql = sqlCreator.findBy("email");
+        User user = null;
+
         try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, email);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    User user = mapRowToUser(rs);
-                    return Optional.of(user);
+                    user = mapRowToObject(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Erro ao buscar usuário por email", e);
         }
-        return Optional.empty();
+
+        return user;
     }
 
-    public User save(User user) {
-        String sql = "INSERT INTO users (name, email, password, birth_date, role, location) VALUES (?, ?, ?, ?, ?, ?)";
+    @SuppressWarnings("serial")
+    public User save(User user) throws DataAccessException {
+        SQLFields sqlFields = null;
+        try {
+            sqlFields = sqlCreator.prepareFields(user, SQLCreator::convertToSnakeCase);
+        } catch (IllegalAccessException e) {
+            throw new DataAccessException("Erro ao preparar os campos para o usuário", e) {};
+        }
+
+        String sql = sqlCreator.insert(sqlFields);
+
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
-            stmt.setDate(4, java.sql.Date.valueOf(user.getBirthDate()));
-            stmt.setString(5, user.getRole());
-            stmt.setString(6, user.getLocation());
+
+            for (int i = 0; i < sqlFields.values().size(); i++) {
+                stmt.setObject(i + 1, sqlFields.values().get(i));
+            }
+
             stmt.executeUpdate();
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -134,52 +161,79 @@ public class UserDao {
                     user.setId(generatedKeys.getLong(1));
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Erro ao salvar o usuário", e);
+            throw new DataAccessException("Erro ao salvar o usuário no banco de dados", e) {};
         }
+
         return user;
     }
 
-    public User update(Long id, User userDetails) {
-        String sql = "UPDATE users SET password = ?, birth_date = ?, role = ?, location = ? WHERE id = ?";
-        try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, userDetails.getPassword());
-            stmt.setDate(2, java.sql.Date.valueOf(userDetails.getBirthDate()));
-            stmt.setString(3, userDetails.getRole());
-            stmt.setString(4, userDetails.getLocation());
-            stmt.setLong(5, id);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    @SuppressWarnings("serial")
+    public User update(Long id, User userDetails) throws DataAccessException {
+        SQLFields sqlFields = null;
+
+        try {
+            sqlFields = sqlCreator.prepareFields(userDetails, SQLCreator::convertToSnakeCase);
+        } catch (IllegalAccessException e) {
+            throw new DataAccessException("Erro ao preparar os campos para o usuário", e) {};
         }
+
+        String sql = sqlCreator.update(sqlFields);
+
+        try (Connection connection = getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)) {
+            for (int i = 0; i < sqlFields.values().size(); i++) {
+                stmt.setObject(i + 1, sqlFields.values().get(i));
+            }
+
+            stmt.setObject(sqlFields.values().size() + 1, id);
+
+            int rowsUpdated = stmt.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                throw new DataAccessException("Nenhum usuário foi atualizado. Verifique o ID fornecido.") {};
+            }
+        } catch (Exception e) {
+            logger.error("Erro ao atualizar usuário com ID: " + id, e);
+            throw new DataAccessException("Erro ao atualizar o usuário no banco de dados", e) {};
+        }
+
         return userDetails;
     }
 
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM users WHERE id = ?";
+    @SuppressWarnings("serial")
+    public void deleteById(Long id) throws DataAccessException {
+        String sql = sqlCreator.deleteBy("id");
 
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, id);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Erro ao deletar usuário com ID: " + id, e);
+            throw new DataAccessException("Erro ao deletar o usuário no banco de dados", e) {};
         }
     }
 
-    private User mapRowToUser(ResultSet rs) throws SQLException {
-        Long id = rs.getLong("id");
-        String name = rs.getString("name");
-        String email = rs.getString("email");
-        String password = rs.getString("password");
-        java.sql.Date birthDate = rs.getDate("birth_date");
-        String role = rs.getString("role");
-        String location = rs.getString("location");
+    @SuppressWarnings("serial")
+	private User mapRowToObject(ResultSet rs) throws DataAccessException {
+        try {
+            Long id = rs.getLong("id");
+            String name = rs.getString("name");
+            String email = rs.getString("email");
+            String password = rs.getString("password");
+            LocalDate birthDate = rs.getDate("birth_date").toLocalDate();
+            String role = rs.getString("role");
+            String location = rs.getString("location");
 
-        if (name == null || email == null || birthDate == null || role == null || location == null || password == null) {
-            throw new SQLException("Required field(s) missing for user");
+            if (name == null || email == null || birthDate == null || role == null || location == null || password == null) {
+                throw new DataAccessException("Required field(s) missing for user") {};
+            }
+
+            return new User(id, name, email, password, birthDate, role, location);
+        } catch (Exception e) {
+            logger.error("Erro ao mapear os dados do usuário", e);
+            throw new DataAccessException("Erro ao mapear os dados do usuário", e) {};
         }
-
-        return new User(id, name, email, password, birthDate.toLocalDate(), role, location);
     }
 }

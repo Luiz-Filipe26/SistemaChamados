@@ -1,3 +1,8 @@
+DROP TABLE messages;
+DROP TABLE users;
+DROP TABLE tickets;
+
+
 -- Criação da tabela de tickets
 CREATE TABLE IF NOT EXISTS tickets (
     id BIGSERIAL PRIMARY KEY,
@@ -6,24 +11,34 @@ CREATE TABLE IF NOT EXISTS tickets (
     status VARCHAR(50) NOT NULL,
     user_id BIGINT NOT NULL,
     creation_date DATE NOT NULL,
-    update_date DATE NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    update_date DATE NOT NULL
 );
 
 
--- Inserção de um ticket inicial
-INSERT INTO tickets (description) VALUES ('Chamado inicial');
 
 -- Criação da tabela de usuários
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(127) NOT NULL,
     email VARCHAR(127) NOT NULL UNIQUE,
-    password CHAR(60) NOT NULL  -- O hash da senha
+    password CHAR(60) NOT NULL,
     birth_date DATE,
     role VARCHAR(63),
     location VARCHAR(255)
 );
+
+CREATE TABLE IF NOT EXISTS messages (
+    id BIGSERIAL PRIMARY KEY,
+    ticket_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    text VARCHAR(255) NOT NULL,
+    creation_date DATE NOT NULL,
+    creation_time TIME NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 
 -- Inserção de um usuário inicial
 -- INSERT INTO users (name, email, birth_date, role, location) 

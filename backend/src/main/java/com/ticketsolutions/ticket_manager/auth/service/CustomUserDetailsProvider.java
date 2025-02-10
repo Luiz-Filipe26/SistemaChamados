@@ -1,10 +1,11 @@
-package com.ticketsolutions.ticket_manager.auth.domain;
+package com.ticketsolutions.ticket_manager.auth.service;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.ticketsolutions.ticket_manager.auth.domain.User;
 import com.ticketsolutions.ticket_manager.auth.repository.UserDao;
 
 @Service
@@ -18,8 +19,11 @@ public class CustomUserDetailsProvider implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return userDao.findByName(username).orElseThrow(() -> {
-			return new UsernameNotFoundException("User not found with username: " + username);
-		});
+	    User user = userDao.findByName(username);
+	    if (user == null) {
+	        throw new UsernameNotFoundException("User not found with username: " + username);
+	    }
+	    return user;
 	}
+
 }

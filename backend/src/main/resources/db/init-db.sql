@@ -1,6 +1,6 @@
-DROP TABLE messages;
-DROP TABLE users;
-DROP TABLE tickets;
+--DROP TABLE messages;
+--DROP TABLE users;
+--DROP TABLE tickets;
 
 
 -- Criação da tabela de tickets
@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS tickets (
     creation_date DATE NOT NULL,
     update_date DATE NOT NULL
 );
-
 
 
 -- Criação da tabela de usuários

@@ -1,7 +1,6 @@
-package com.ticketsolutions.ticket_manager.auth.security;
+package com.ticketsolutions.ticket_manager.auth.infra;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ticketsolutions.ticket_manager.auth.repository.UserDao;
+import com.ticketsolutions.ticket_manager.auth.service.TokenProvider;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,10 +29,10 @@ public class SecurityFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		var token = this.recoverTokenFromCookies(request);
+		var token = recoverTokenFromHeader(request);
 		if (token != null) {
 			String login = tokenProvider.validateToken(token);
-			UserDetails user = userDao.findByName(login).orElse(null);
+			UserDetails user = userDao.findByName(login);
 
 			if (user != null) {
 				var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
@@ -42,18 +42,11 @@ public class SecurityFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private String recoverTokenFromCookies(HttpServletRequest request) {
-		var cookies = request.getCookies();
-		if (cookies == null) {
-			return null;
+	private String recoverTokenFromHeader(HttpServletRequest request) {
+		var authHeader = request.getHeader("Authorization");
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			return authHeader.substring(7);
 		}
-		
-		for (var cookie : cookies) {
-			if ("auth_token".equals(cookie.getName())) {
-				return cookie.getValue();
-			}
-		}
-		
 		return null;
 	}
 }

@@ -2,13 +2,12 @@ package com.ticketsolutions.ticket_manager.message.domain;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class Message {
     private Long id;

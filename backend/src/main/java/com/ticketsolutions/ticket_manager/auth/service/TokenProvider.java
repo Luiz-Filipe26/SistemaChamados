@@ -1,4 +1,4 @@
-package com.ticketsolutions.ticket_manager.auth.security;
+package com.ticketsolutions.ticket_manager.auth.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

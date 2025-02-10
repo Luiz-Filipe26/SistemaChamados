@@ -1,13 +1,14 @@
 package com.ticketsolutions.ticket_manager.message.service;
 
-import com.ticketsolutions.ticket_manager.message.repository.MessageDao;
-import com.ticketsolutions.ticket_manager.message.domain.Message;
-
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.ticketsolutions.ticket_manager.message.domain.Message;
+import com.ticketsolutions.ticket_manager.message.repository.MessageDao;
 
 @Service
 public class MessageService {
@@ -18,18 +19,29 @@ public class MessageService {
         this.messageDao = messageDao;
     }
 
-    // Buscar todas as mensagens de um ticket
-    public List<Message> getMessagesByTicketId(Long ticketId) {
-        return messageDao.findByTicketId(ticketId);
+    public List<Message> getAllMessages() {
+        return messageDao.findAll();
     }
 
-    // Buscar uma mensagem por ID
-    public Optional<Message> getMessageById(Long id) {
+    public Message getMessageById(Long id) {
         return messageDao.findById(id);
     }
 
-    // Criar uma nova mensagem
-    public Message createMessage(Message message) {
+    public Message createMessage(Message message) throws DataAccessException {
+        message.setCreationDate(LocalDate.now());
+        message.setCreationTime(LocalTime.now());
         return messageDao.save(message);
+    }
+
+    public Message modifyMessage(Long id, Message messageDetails) throws DataAccessException {
+        return messageDao.update(id, messageDetails);
+    }
+
+    public void removeMessage(Long id) throws DataAccessException {
+        messageDao.deleteById(id);
+    }
+
+    public List<Message> retrieveMessagesByTicketId(Long ticketId) {
+        return messageDao.findByTicketId(ticketId);
     }
 }

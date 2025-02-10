@@ -2,8 +2,8 @@ package com.ticketsolutions.ticket_manager.ticket.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ticketsolutions.ticket_manager.ticket.domain.Ticket;
@@ -18,41 +18,26 @@ public class TicketService {
         this.ticketDao = ticketDao;
     }
 
-    public List<Ticket> getAllTickets() {
+    public List<Ticket> fetchAllTickets() {
         return ticketDao.findAll();
     }
-
-    public Optional<Ticket> getTicketById(Long id) {
+    
+    public Ticket fetchTicketById(Long id) {
         return ticketDao.findById(id);
     }
 
-    public Ticket createTicket(Ticket ticket) {
+    public Ticket createTicket(Ticket ticket) throws DataAccessException {
         ticket.setCreationDate(LocalDate.now());
         ticket.setUpdateDate(LocalDate.now());
         return ticketDao.save(ticket);
     }
-
-    public Ticket updateTicket(Long id, Ticket ticketDetails) {
-    	Optional<Ticket> existingTicketOpt = ticketDao.findById(id);
-    	if(existingTicketOpt.isPresent()) {
-    		Ticket existingTicket = existingTicketOpt.get();
-            existingTicket.setTitle(ticketDetails.getTitle());
-            existingTicket.setDescription(ticketDetails.getDescription());
-            existingTicket.setStatus(ticketDetails.getStatus());
-            existingTicket.setUserId(ticketDetails.getUserId());
-            existingTicket.setCreationDate(ticketDetails.getCreationDate());
-            existingTicket.setUpdateDate(LocalDate.now());
-            
-            return ticketDao.update(id, existingTicket);
-    	}
-        return null;
+    
+    public Ticket modifyTicket(Long id, Ticket ticketDetails) throws DataAccessException {
+        ticketDetails.setUpdateDate(LocalDate.now());
+        return ticketDao.update(id, ticketDetails);
     }
 
-    public boolean deleteTicket(Long id) {
-        if (ticketDao.findById(id).isPresent()) {
-            ticketDao.deleteById(id);
-            return true;
-        }
-        return false;
+    public void removeTicket(Long id) throws DataAccessException {
+        ticketDao.deleteById(id);
     }
 }
