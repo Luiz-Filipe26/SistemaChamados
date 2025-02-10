@@ -46,14 +46,6 @@ h1 {
     padding: 20px;
 }
 
-.tab-panel {
-    display: none;
-}
-
-.tab-panel.active {
-    display: block;
-}
-
 #messages-container {
     margin-top: 20px;
 }

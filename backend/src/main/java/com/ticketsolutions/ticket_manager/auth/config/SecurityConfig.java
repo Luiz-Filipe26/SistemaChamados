@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/users/login").permitAll() // Permite o login sem autenticação
                         .requestMatchers(HttpMethod.POST, "/users/register").permitAll() // Permite o registro sem autenticação
-                        .requestMatchers(HttpMethod.POST, "/product").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/product").hasAnyRole("ADMIN", "Admin")
                         .requestMatchers("/checker/**").permitAll()
                         .anyRequest().authenticated()
                 )

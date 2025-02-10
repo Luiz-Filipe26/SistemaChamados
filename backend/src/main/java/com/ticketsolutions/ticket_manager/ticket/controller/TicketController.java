@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ticketsolutions.ticket_manager.ticket.domain.Ticket;
+import com.ticketsolutions.ticket_manager.ticket.domain.TicketResponseDTO;
 import com.ticketsolutions.ticket_manager.ticket.service.TicketService;
 
 import java.util.List;
@@ -31,10 +32,10 @@ public class TicketController {
     }
 
     @GetMapping
-    public List<Ticket> getAllTickets() {
+    public List<TicketResponseDTO> getAllTickets() {
         logger.info("Iniciando a recuperação de todos os tickets");
         
-        List<Ticket> tickets = ticketService.fetchAllTickets();
+        List<TicketResponseDTO> tickets = ticketService.fetchAllTickets();
         
         logger.info("Recuperação de todos os tickets finalizada com sucesso");
         
@@ -42,10 +43,10 @@ public class TicketController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Ticket> getTicketById(@PathVariable Long id) {
+    public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable Long id) {
         logger.info("Buscando ticket com id: {}", id);
         
-        Ticket ticket = ticketService.fetchTicketById(id);
+        TicketResponseDTO ticket = ticketService.fetchTicketById(id);
         
         if (ticket != null) {
             logger.info("Ticket encontrado com id: {}", id);

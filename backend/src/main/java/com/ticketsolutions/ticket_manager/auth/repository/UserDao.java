@@ -6,7 +6,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -134,6 +138,36 @@ public class UserDao {
         }
 
         return user;
+    }
+    
+    public Map<Long, String> getIdToUserNameById(Collection<Long> userIds) {
+        Map<Long, String> userIdToUserNameMap = new HashMap<>();
+        String placeholders = userIds.stream()
+                                     .map(v -> "?")
+                                     .collect(Collectors.joining(","));
+
+        String sql = "SELECT id, name FROM users WHERE id IN (" + placeholders + ")";
+
+        try (Connection connection = getConnection()) {
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                int index = 1;
+                for (Long userId : userIds) {
+                    stmt.setLong(index++, userId);
+                }
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        Long userId = rs.getLong("id");
+                        String userName = rs.getString("name");
+                        userIdToUserNameMap.put(userId, userName);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Erro ao buscar usuários por id", e);
+        }
+
+        return userIdToUserNameMap;
     }
 
     @SuppressWarnings("serial")

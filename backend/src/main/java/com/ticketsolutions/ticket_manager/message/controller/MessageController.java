@@ -1,6 +1,7 @@
 package com.ticketsolutions.ticket_manager.message.controller;
 
 import com.ticketsolutions.ticket_manager.message.domain.Message;
+import com.ticketsolutions.ticket_manager.message.domain.MessageResponseDTO;
 import com.ticketsolutions.ticket_manager.message.service.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +24,10 @@ public class MessageController {
     }
 
     @GetMapping
-    public List<Message> getAllMessages() {
+    public List<MessageResponseDTO> getAllMessages() {
         logger.info("Iniciando a recuperação de todas as mensagens");
 
-        List<Message> messages = messageService.getAllMessages();
+        List<MessageResponseDTO> messages = messageService.getAllMessages();
 
         logger.info("Recuperação de todas as mensagens finalizada com sucesso");
 
@@ -34,10 +35,10 @@ public class MessageController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Message> getMessageById(@PathVariable Long id) {
+    public ResponseEntity<MessageResponseDTO> getMessageById(@PathVariable Long id) {
         logger.info("Buscando mensagem com id: {}", id);
 
-        Message message = messageService.getMessageById(id);
+        MessageResponseDTO message = messageService.getMessageById(id);
 
         if (message != null) {
             logger.info("Mensagem encontrada com id: {}", id);
@@ -96,10 +97,10 @@ public class MessageController {
     }
 
     @GetMapping("/ticket/{ticketId}")
-    public List<Message> getMessagesByTicketId(@PathVariable Long ticketId) {
+    public List<MessageResponseDTO> getMessagesByTicketId(@PathVariable Long ticketId) {
         logger.info("Buscando mensagens para o ticket com id: {}", ticketId);
 
-        List<Message> messages = messageService.retrieveMessagesByTicketId(ticketId);
+        List<MessageResponseDTO> messages = messageService.retrieveMessagesByTicketId(ticketId);
 
         logger.info("Recuperação de mensagens para o ticket com id: {} finalizada", ticketId);
 

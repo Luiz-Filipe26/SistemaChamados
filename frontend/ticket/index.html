@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="./ticket.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
@@ -20,79 +21,15 @@
     <!-- Seção de Abas -->
     <section class="tabs">
         <button id="tab-description" class="tab-button">Descrição</button>
-        <button id="tab-messages" class="tab-button active">Mensagens</button>
+        <button id="tab-messages" class="tab-button">Mensagens</button>
     </section>
 
     <!-- Seção de Conteúdo das Abas -->
-    <section class="tab-content">
-        <!-- Descrição da Aba -->
-        <div id="description-tab" class="tab-panel">
-            <p>Aqui você pode colocar a descrição do chamado.</p>
-        </div>
-
-        <!-- Mensagens da Aba -->
-        <div id="messages-tab" class="tab-panel active">
-            <div id="messages-container">
-                <!-- As mensagens serão inseridas aqui -->
-            </div>
-        </div>
+    <section class="tab-content" id="tab-content">
+        <!-- O conteúdo da aba ativa será injetado dinamicamente aqui -->
     </section>
 
-    <script>
-        // Função simulada para pegar as mensagens
-        function getDummyMessages() {
-            return [
-                { author: 'João', message: 'O chamado foi aberto corretamente.' },
-                { author: 'Ana', message: 'Estou analisando o problema.' },
-                { author: 'Carlos', message: 'Já foi feito o primeiro teste.' }
-            ];
-        }
-
-        // Função para carregar mensagens
-        function getMessages() {
-            const messages = getDummyMessages(); // Você substituirá por uma chamada à API aqui
-            const messagesContainer = document.getElementById('messages-container');
-            messagesContainer.innerHTML = '';
-
-            messages.forEach(msg => {
-                const messageBlock = document.createElement('div');
-                messageBlock.classList.add('message-block');
-                messageBlock.innerHTML = `
-                    <strong>${msg.author}:</strong>
-                    <p>${msg.message}</p>
-                `;
-                messagesContainer.appendChild(messageBlock);
-            });
-        }
-
-        // Função para mudar a aba ativa
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-
-            document.getElementById(`${tab}-tab`).classList.add('active');
-            document.getElementById(`tab-${tab}`).classList.add('active');
-        }
-
-        // Quando a página carrega
-        window.addEventListener('load', () => {
-            // Obter o número do chamado da URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const ticketId = urlParams.get('ticketId');
-            const ticketNumberElement = document.getElementById('ticket-number');
-            if (ticketId) {
-                ticketNumberElement.textContent = ticketId;
-            } else {
-                ticketNumberElement.textContent = 'Não fornecido';
-            }
-
-            // Carregar as mensagens por padrão
-            getMessages();
-
-            // Adicionar event listeners para as abas
-            document.getElementById('tab-description').addEventListener('click', () => switchTab('description'));
-            document.getElementById('tab-messages').addEventListener('click', () => switchTab('messages'));
-        });
+    <script type="module" src="./ticket.js">
     </script>
 </body>
 
