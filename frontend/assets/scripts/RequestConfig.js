@@ -1,5 +1,13 @@
 export default class RequestConfig {
-    
+    /** @type {string} */
+    method;
+
+    /** @type {Record<string, string>} */
+    headers;
+
+    /** @type {string | undefined} */
+    body;
+
     constructor() {
         this.method = 'GET';
         this.headers = {
@@ -43,11 +51,20 @@ export default class RequestConfig {
         return this;
     }
 
+    /** 
+     * @param {string} key
+     * @param {string} value
+     * @returns {RequestConfig}
+     */
     withHeader(key, value) {
         this.headers[key] = value;
         return this;
     }
-    
+
+    /** 
+     * @param {Object} body
+     * @returns {RequestConfig}
+     */
     jsonBody(body) {
         this.body = JSON.stringify(body);
         return this.asJson();

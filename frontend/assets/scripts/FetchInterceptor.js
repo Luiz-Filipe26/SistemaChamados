@@ -1,4 +1,7 @@
 export default class FetchInterceptor {
+    /**
+     * @param {function} atInterceptionEvent
+     */
     static create(atInterceptionEvent) {
         const { fetch: originalFetch } = window;
 
@@ -14,8 +17,11 @@ export default class FetchInterceptor {
         };
     }
 
+    /**
+     * @param {Response} response
+     */
     static handleUnauthorized(response) {
-        if (response.status === 401) {
+        if (response.status === 401 || response.status == 403 ) {
             console.log('Token expirado ou não autorizado. Redirecionando para login...');
             window.location.href = '/login';
         }
