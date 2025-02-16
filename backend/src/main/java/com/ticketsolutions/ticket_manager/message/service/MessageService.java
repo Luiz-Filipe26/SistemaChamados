@@ -13,16 +13,20 @@ import com.ticketsolutions.ticket_manager.message.domain.Message;
 import com.ticketsolutions.ticket_manager.message.domain.MessageRequestDTO;
 import com.ticketsolutions.ticket_manager.message.domain.MessageResponseDTO;
 import com.ticketsolutions.ticket_manager.message.repository.MessageDao;
+import com.ticketsolutions.ticket_manager.ticket.domain.Ticket;
+import com.ticketsolutions.ticket_manager.ticket.repository.TicketDao;
 
 @Service
 public class MessageService {
 
 	private final MessageDao messageDao;
 	private final UserDao userDao;
+	private final TicketDao ticketDao;
 
-	public MessageService(MessageDao messageDao, UserDao userDao) {
+	public MessageService(MessageDao messageDao, UserDao userDao, TicketDao ticketDao) {
 		this.messageDao = messageDao;
 		this.userDao = userDao;
+		this.ticketDao = ticketDao;
 	}
 
 	public List<MessageResponseDTO> getAllMessages() {
@@ -55,6 +59,8 @@ public class MessageService {
 		var creationTime = LocalTime.now();
 		var message = new Message(null, messagerequest.getTicketId(), user.getId(), messagerequest.getText(), creationDate,
 				creationTime, messagerequest.getStatus());
+		
+		ticketDao.update(messagerequest.getTicketId(), new Ticket(messagerequest.getTicketId(), message.getStatus()));
 
 		return messageDao.save(message);
 	}

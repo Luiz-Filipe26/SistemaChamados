@@ -16,6 +16,11 @@ public class Ticket{
     private Long userId;
     private LocalDate creationDate;
     private LocalDate updateDate;
+    
+    public Ticket(Long id, String status) {
+    	this.id = id;
+    	this.status = status;
+    }
 
 
 }
