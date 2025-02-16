@@ -1,5 +1,7 @@
 package com.ticketsolutions.ticket_manager.ticket.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -15,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ticketsolutions.ticket_manager.ticket.domain.Ticket;
+import com.ticketsolutions.ticket_manager.ticket.domain.TicketRequestDTO;
 import com.ticketsolutions.ticket_manager.ticket.domain.TicketResponseDTO;
 import com.ticketsolutions.ticket_manager.ticket.service.TicketService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
@@ -58,7 +59,7 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createTicket(@RequestBody Ticket ticket) {
+    public ResponseEntity<?> createTicket(@RequestBody TicketRequestDTO ticket) {
         logger.info("Iniciando a criação de um novo ticket");
         
         try {

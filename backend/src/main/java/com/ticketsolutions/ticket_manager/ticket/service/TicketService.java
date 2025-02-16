@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ticketsolutions.ticket_manager.auth.repository.UserDao;
 import com.ticketsolutions.ticket_manager.ticket.domain.Ticket;
+import com.ticketsolutions.ticket_manager.ticket.domain.TicketRequestDTO;
 import com.ticketsolutions.ticket_manager.ticket.domain.TicketResponseDTO;
 import com.ticketsolutions.ticket_manager.ticket.repository.TicketDao;
 
@@ -46,9 +47,18 @@ public class TicketService {
         return null;
     }
 
-    public Ticket createTicket(Ticket ticket) throws DataAccessException {
-        ticket.setCreationDate(LocalDate.now());
-        ticket.setUpdateDate(LocalDate.now());
+    @SuppressWarnings("serial")
+	public Ticket createTicket(TicketRequestDTO ticketRequest) throws DataAccessException {
+    	var creationDate = LocalDate.now();
+    	var updateDate = LocalDate.now();
+    	var user = userDao.findByName(ticketRequest.getUserName());
+    	if(user == null) {
+    		throw new DataAccessException("Nome de usuário não encontrado!") {};
+    	}
+    	
+    	Long userId = user.getId();
+    	var ticket = new Ticket(null, ticketRequest.getTitle(), ticketRequest.getDescription(), "Aberto", userId, creationDate, updateDate);
+        
         return ticketDao.save(ticket);
     }
     

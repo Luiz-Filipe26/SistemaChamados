@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Chamado</title>
+    <link rel="stylesheet" href="./create_ticket.css">
+    <script src="/assets/components/navbar.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+</head>
+<body>
+    <my-navbar></my-navbar>
+    <div class="form-container">
+        <h2>Criar Chamado</h2>
+        <form id="ticketForm">
+            <div class="form-group">
+                <label for="title">Título</label>
+                <input type="text" id="title" class="input-field" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Descrição</label>
+                <textarea id="description" class="input-field" required></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn">Criar Chamado</button>
+        </form>
+    </div>
+
+    <script src="create_ticket.js" type="module"></script>
+</body>
+</html>
