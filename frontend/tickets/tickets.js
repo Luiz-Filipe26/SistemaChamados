@@ -4,49 +4,27 @@ import FetchInterceptor from '/assets/scripts/FetchInterceptor.js';
 FetchInterceptor.create(FetchInterceptor.handleUnauthorized);
 let ticketsData = []; // Armazena os tickets recuperados globalmente
 
-async function getTickets(filters) {
-    const endpoint = 'http://localhost:8080/tickets';
+document.getElementById('search-btn').onclick = searchTickets;
 
-    try {
+function searchTickets() {
+    const filters = ['ticket', 'status', 'creator', 'startDate', 'endDate']
+        .map(fieldId => {
+            let value = document.getElementById(fieldId)?.querySelector('.input-field')?.value || '';
 
-        const requestConfig = new RequestConfig()
-            .get()
-            .withAuth()
-            .asJson();
+            if (!isNaN(value) && value.trim() !== '') value = Number(value);
+            if (fieldId === 'startDate' || fieldId === 'endDate') value = value ? new Date(value) : null;
 
-        const response = await fetch(endpoint, requestConfig);
+            return { filterName: fieldId, value };
+        })
+        .filter(filter => filter.value);
 
-        if (!response.ok) {
-            throw new Error(`Erro ao buscar tickets: ${response.statusText}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error(error);
-        return [];
-    }
-}
-
-function createRow(tableBody, ticket) {
-    const row = document.createElement('tr');
-
-    row.innerHTML = `
-        <td>${String(ticket.id).padStart(6, '0')}</td>
-        <td>${ticket.title}</td>
-        <td>${ticket.status}</td>
-        <td>${ticket.creationDate}</td>
-        <td>${ticket.updateDate}</td>
-    `;
-
-    row.addEventListener('click', () => {
-        const selectedTicket = ticketsData.find(t => t.number === ticket.number);
-        if (selectedTicket) {
-            const targetUrl = `/ticket/?ticketId=${selectedTicket.id}`;
-            window.open(targetUrl, '_blank');
-        }
+    filters.forEach(filter => {
+        if (filter.filterName == 'ticket') filter.filterName = 'id';
+        if (filter.filterName == 'creator') filter.filterName = 'userName';
     });
 
-    tableBody.appendChild(row);
+    console.log('Filtros enviados:', filters);
+    populateTicketsTable(filters);
 }
 
 async function populateTicketsTable(filters) {
@@ -62,15 +40,67 @@ async function populateTicketsTable(filters) {
     }
 }
 
-function searchTickets() {
-    const filters = ['ticket', 'status', 'creator', 'startDate', 'endDate'].reduce((acc, fieldId) => {
-        acc[fieldId] = document.getElementById(fieldId)?.querySelector('.input-field')?.value || '';
-        return acc;
-    }, {});
+async function getTickets(filters) {
+    const endpoint = 'http://localhost:8080/tickets';
 
-    console.log('Filtros enviados:', filters);
-    populateTicketsTable(filters);
+    try {
+        const requestConfig = new RequestConfig()
+            .get()
+            .withAuth()
+            .asJson();
+
+        const response = await fetch(endpoint, requestConfig);
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar tickets: ${response.statusText}`);
+        }
+
+        const tickets = await response.json();
+        return tickets.filter(ticket =>
+            filters.every(({ filterName, value }) => {
+                if (filterName === 'startDate' || filterName === 'endDate') {
+                    const ticketDate = new Date(ticket.creationDate);
+                    return filterName === 'startDate' ? ticketDate >= value : ticketDate <= value;
+                }
+
+                if (!ticket[filterName]) return true;  // Ignora se o valor não existe
+
+                if (typeof ticket[filterName] === 'number') return ticket[filterName] === value;
+
+                if (typeof ticket[filterName] === 'string') {
+                    return ticket[filterName].toLowerCase().includes(value.toLowerCase());
+                }
+
+                return true;
+            })
+        );
+
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
 }
 
+function createRow(tableBody, ticket) {
+    const row = document.createElement('tr');
 
-document.getElementById('search-btn').addEventListener('click', searchTickets);
+    row.innerHTML = `
+        <td>${String(ticket.id).padStart(6, '0')}</td>
+        <td>${ticket.description}</td>
+        <td>${ticket.creationDate}</td>
+        <td>${ticket.updateDate}</td>
+        <td>${ticket.userName}</td>
+        <td>${ticket.status}</td>
+    `;
+
+    row.addEventListener('click', () => {
+        const selectedTicket = ticketsData.find(t => t.number === ticket.number);
+        if (selectedTicket) {
+            const targetUrl = `/ticket/?ticketId=${selectedTicket.id}`;
+            window.open(targetUrl, '_blank');
+        }
+    });
+
+    tableBody.appendChild(row);
+}
+

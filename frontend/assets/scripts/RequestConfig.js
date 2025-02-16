@@ -5,7 +5,7 @@ export default class RequestConfig {
     /** @type {Record<string, string>} */
     headers;
 
-    /** @type {string | undefined} */
+    /** @type {string?} */
     body;
 
     constructor() {

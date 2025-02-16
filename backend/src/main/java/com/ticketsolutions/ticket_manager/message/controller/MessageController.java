@@ -1,6 +1,7 @@
 package com.ticketsolutions.ticket_manager.message.controller;
 
 import com.ticketsolutions.ticket_manager.message.domain.Message;
+import com.ticketsolutions.ticket_manager.message.domain.MessageRequestDTO;
 import com.ticketsolutions.ticket_manager.message.domain.MessageResponseDTO;
 import com.ticketsolutions.ticket_manager.message.service.MessageService;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class MessageController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createMessage(@RequestBody Message message) {
+    public ResponseEntity<?> createMessage(@RequestBody MessageRequestDTO message) {
         logger.info("Iniciando a criação de uma nova mensagem");
 
         try {

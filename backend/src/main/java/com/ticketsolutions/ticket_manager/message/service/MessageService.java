@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.ticketsolutions.ticket_manager.auth.repository.UserDao;
 import com.ticketsolutions.ticket_manager.message.domain.Message;
+import com.ticketsolutions.ticket_manager.message.domain.MessageRequestDTO;
 import com.ticketsolutions.ticket_manager.message.domain.MessageResponseDTO;
 import com.ticketsolutions.ticket_manager.message.repository.MessageDao;
 
@@ -25,29 +26,36 @@ public class MessageService {
 	}
 
 	public List<MessageResponseDTO> getAllMessages() {
-	    var messages = messageDao.findAll();
-	    
-	    var userNames = userDao.getIdToUserNameById(
-	            messages.stream().map(Message::getId).collect(Collectors.toSet()));
-	    
-	    return messages.stream()
-	        .map(m -> new MessageResponseDTO(m, userNames.getOrDefault(m.getId(), "Nome não encontrado")))
-	        .toList();
+		var messages = messageDao.findAll();
+
+		var userNames = userDao.getIdToUserNameById(messages.stream().map(Message::getId).collect(Collectors.toSet()));
+
+		return messages.stream()
+				.map(m -> new MessageResponseDTO(m, userNames.getOrDefault(m.getId(), "Nome não encontrado"))).toList();
 	}
 
 	public MessageResponseDTO getMessageById(Long id) {
-	    var message = messageDao.findById(id);
-	    if (message != null) {
-	        var userNames = userDao.getIdToUserNameById(List.of(message.getId()));
-	        String userName = userNames.getOrDefault(message.getId(), "Nome não encontrado");
-	        return new MessageResponseDTO(message, userName);
-	    }
-	    return null;
+		var message = messageDao.findById(id);
+		if (message != null) {
+			var userNames = userDao.getIdToUserNameById(List.of(message.getId()));
+			String userName = userNames.getOrDefault(message.getId(), "Nome não encontrado");
+			return new MessageResponseDTO(message, userName);
+		}
+		return null;
 	}
 
-	public Message createMessage(Message message) throws DataAccessException {
-		message.setCreationDate(LocalDate.now());
-		message.setCreationTime(LocalTime.now());
+	@SuppressWarnings("serial")
+	public Message createMessage(MessageRequestDTO messagerequest) throws DataAccessException {
+		var user = userDao.findByName(messagerequest.getUserName());
+		if(user == null) {
+			throw new DataAccessException("Nome de usuário não existe.") {};
+		}
+		
+		var creationDate = LocalDate.now();
+		var creationTime = LocalTime.now();
+		var message = new Message(null, messagerequest.getTicketId(), user.getId(), messagerequest.getText(), creationDate,
+				creationTime, messagerequest.getStatus());
+
 		return messageDao.save(message);
 	}
 
@@ -60,13 +68,13 @@ public class MessageService {
 	}
 
 	public List<MessageResponseDTO> retrieveMessagesByTicketId(Long ticketId) {
-	    var messages = messageDao.findByTicketId(ticketId);
+		var messages = messageDao.findByTicketId(ticketId);
 
-	    var userNames = userDao.getIdToUserNameById(
-	            messages.stream().map(Message::getUserId).collect(Collectors.toSet()));
+		var userNames = userDao
+				.getIdToUserNameById(messages.stream().map(Message::getUserId).collect(Collectors.toSet()));
 
-	    return messages.stream()
-	        .map(m -> new MessageResponseDTO(m, userNames.getOrDefault(m.getUserId(), "Nome não encontrado")))
-	        .toList();
+		return messages.stream()
+				.map(m -> new MessageResponseDTO(m, userNames.getOrDefault(m.getUserId(), "Nome não encontrado")))
+				.toList();
 	}
 }
