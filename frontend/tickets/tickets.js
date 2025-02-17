@@ -94,11 +94,8 @@ function createRow(tableBody, ticket) {
     `;
 
     row.addEventListener('click', () => {
-        const selectedTicket = ticketsData.find(t => t.number === ticket.number);
-        if (selectedTicket) {
-            const targetUrl = `/ticket/?ticketId=${selectedTicket.id}`;
-            window.open(targetUrl, '_blank');
-        }
+        const targetUrl = `/ticket/?ticketId=${ticket.id}`;
+        window.open(targetUrl, '_blank');
     });
 
     tableBody.appendChild(row);
